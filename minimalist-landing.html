@@ -1,0 +1,1340 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduFlow - Minimalist Learning Platform</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #2563eb;
+            --text-dark: #1a1a1a;
+            --text-light: #6b7280;
+            --bg-light: #f9fafb;
+            --border-color: #e5e7eb;
+            --white: #ffffff;
+            --success-color: #22c55e;
+        }
+
+        html, body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background: var(--white);
+            overflow-x: hidden;
+            width: 100%;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Navigation */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            border-bottom: 1px solid var(--border-color);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        @media (max-width: 768px) {
+            nav {
+                padding: 1rem 0;
+            }
+        }
+
+        .nav-hidden {
+            transform: translateY(-100%);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-light);
+            font-weight: 500;
+            transition: color 0.3s;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-color);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary-color);
+            transition: width 0.3s;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .whatsapp-btn {
+            background: var(--success-color);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .whatsapp-btn:hover {
+            background: #16a34a;
+            transform: translateY(-2px);
+        }
+
+        /* Mobile Menu Toggle */
+        .menu-toggle {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 1001;
+        }
+
+        .menu-toggle span {
+            width: 25px;
+            height: 3px;
+            background: var(--text-dark);
+            margin: 4px 0;
+            transition: 0.3s;
+            border-radius: 2px;
+            position: relative;
+        }
+
+        /* Menu toggle animation */
+        .menu-toggle span:nth-child(2) {
+            width: 18px; /* Shorter middle line */
+        }
+
+        .menu-toggle.active span:nth-child(1) {
+            transform: rotate(45deg) translate(6px, 6px);
+        }
+
+        .menu-toggle.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .menu-toggle.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(6px, -6px);
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 10rem 0 4rem;
+            text-align: center;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .hero-content {
+            max-width: 800px;
+            padding: 0 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .hero {
+                padding: 12rem 0 3rem;
+                min-height: 100vh;
+                justify-content: flex-start;
+            }
+
+            .hero-content {
+                padding-top: 3rem;
+            }
+        }
+
+        .hero h1 {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            color: var(--text-dark);
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 0.8s forwards;
+            line-height: 1.2;
+        }
+
+        .hero p {
+            font-size: clamp(1rem, 2.5vw, 1.25rem);
+            color: var(--text-light);
+            margin-bottom: 2rem;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 0.8s 0.2s forwards;
+            line-height: 1.6;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 0.8s 0.4s forwards;
+            margin-top: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+                gap: 1.25rem;
+                width: 100%;
+                max-width: 300px;
+                margin: 1.5rem auto 0;
+            }
+        }
+
+        .primary-btn {
+            background: var(--primary-color);
+            color: white;
+            padding: 0.875rem 1.75rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            min-height: 44px; /* Ensure touch target is large enough */
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .primary-btn:hover {
+            background: #1d4ed8;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+        }
+
+        .secondary-btn {
+            background: transparent;
+            color: var(--primary-color);
+            padding: 0.875rem 1.75rem;
+            border: 2px solid var(--primary-color);
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            cursor: pointer;
+            font-size: 1rem;
+            min-height: 44px; /* Ensure touch target is large enough */
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .secondary-btn:hover {
+            background: var(--primary-color);
+            color: white;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+        }
+
+        /* Features Section */
+        .features {
+            padding: 5rem 0;
+            background: var(--bg-light);
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 0 1rem;
+        }
+
+        .section-title {
+            font-size: clamp(1.75rem, 4vw, 2.5rem);
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+            line-height: 1.3;
+        }
+
+        .section-subtitle {
+            color: var(--text-light);
+            font-size: clamp(0.9rem, 2vw, 1.1rem);
+            line-height: 1.5;
+        }
+
+        @media (max-width: 768px) {
+            .features {
+                padding: 3rem 0;
+            }
+
+            .section-header {
+                margin-bottom: 2rem;
+            }
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s;
+            opacity: 0;
+            transform: translateY(30px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .feature-card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary-color), #7c3aed);
+            border-radius: 16px;
+            margin: 0 auto 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .feature-card h3 {
+            font-size: 1.25rem;
+            margin-bottom: 0.75rem;
+            color: var(--text-dark);
+            line-height: 1.4;
+        }
+
+        .feature-card p {
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+            .feature-card {
+                padding: 1.75rem;
+            }
+
+            .feature-icon {
+                width: 52px;
+                height: 52px;
+                font-size: 1.3rem;
+            }
+
+            .feature-card h3 {
+                font-size: 1.15rem;
+            }
+
+            .feature-card p {
+                font-size: 0.95rem;
+            }
+        }
+
+        /* Courses Section */
+        .courses {
+            padding: 5rem 0;
+        }
+
+        .courses-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(min(350px, 100%), 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .courses {
+                padding: 3rem 0;
+            }
+
+            .courses-grid {
+                gap: 1.5rem;
+                margin-top: 1.5rem;
+            }
+        }
+
+        .course-card {
+            background: var(--white);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s;
+            opacity: 0;
+            transform: translateY(30px);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .course-card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .course-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        .course-image {
+            width: 100%;
+            height: 180px;
+            background: linear-gradient(135deg, var(--primary-color), #7c3aed);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+        }
+
+        .course-content {
+            padding: 1.75rem;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .course-content h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.75rem;
+            color: var(--text-dark);
+            line-height: 1.4;
+        }
+
+        .course-content p {
+            color: var(--text-light);
+            margin-bottom: 1.25rem;
+            line-height: 1.6;
+            flex-grow: 1;
+        }
+
+        .course-meta {
+            display: flex;
+            justify-content: space-between;
+            color: var(--text-light);
+            font-size: 0.9rem;
+            border-top: 1px solid var(--border-color);
+            padding-top: 1rem;
+            margin-top: auto;
+        }
+
+        @media (max-width: 768px) {
+            .course-card {
+                border-radius: 10px;
+            }
+
+            .course-image {
+                height: 160px;
+                font-size: 2.5rem;
+            }
+
+            .course-content {
+                padding: 1.5rem;
+            }
+
+            .course-content h3 {
+                font-size: 1.2rem;
+            }
+
+            .course-content p {
+                font-size: 0.95rem;
+            }
+
+            .course-meta {
+                font-size: 0.85rem;
+                flex-direction: column;
+                gap: 0.5rem;
+                border-top: none;
+                padding-top: 0;
+            }
+        }
+
+        /* Contact Section */
+        .contact {
+            padding: 4rem 0;
+            background: var(--bg-light);
+            text-align: center;
+        }
+
+        .contact-content {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        .contact-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+
+        @media (max-width: 768px) {
+            .contact {
+                padding: 3rem 0;
+            }
+
+            .contact-buttons {
+                flex-direction: column;
+                align-items: center;
+                gap: 1.25rem;
+                width: 100%;
+                max-width: 300px;
+                margin: 1.5rem auto 0;
+            }
+        }
+
+        /* Scroll Up Button */
+        .scroll-up-btn {
+            position: fixed;
+            bottom: 100px;
+            right: 30px;
+            background: var(--primary-color);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            font-size: 1.2rem;
+            box-shadow: 0 5px 20px rgba(37, 99, 235, 0.3);
+            transition: all 0.3s;
+            z-index: 9999; /* Very high z-index to ensure visibility above all other elements */
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(20px);
+            min-width: 50px; /* Ensure minimum touch target size */
+            min-height: 50px; /* Ensure minimum touch target size */
+        }
+
+        .scroll-up-btn.visible {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .scroll-up-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            .scroll-up-btn {
+                width: 46px;
+                height: 46px;
+                bottom: 80px;
+                right: 20px;
+                font-size: 1.1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .scroll-up-btn {
+                width: 44px;
+                height: 44px;
+                bottom: 70px;
+                right: 15px;
+                font-size: 1rem;
+            }
+        }
+
+
+
+        /* Footer */
+        footer {
+            background: var(--text-dark);
+            color: white;
+            padding: 3rem 0 2rem;
+            text-align: center;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            list-style: none;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: #9ca3af;
+            text-decoration: none;
+            transition: color 0.3s;
+            font-size: 0.95rem;
+            padding: 0.25rem 0.5rem;
+        }
+
+        .footer-links a:hover {
+            color: white;
+        }
+
+        .copyright {
+            color: #6b7280;
+            font-size: 0.875rem;
+            margin-top: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            footer {
+                padding: 2.5rem 0 1.5rem;
+            }
+
+            .footer-links {
+                gap: 1rem;
+                margin-bottom: 1rem;
+            }
+
+            .footer-links a {
+                font-size: 0.9rem;
+            }
+        }
+
+        /* Keunggulan Section Styles */
+        .keunggulan-section {
+            margin-top: 3rem;
+        }
+
+        .keunggulan-title {
+            text-align: center;
+            font-size: clamp(1.5rem, 4vw, 1.8rem);
+            font-weight: 700;
+            margin-bottom: 2.5rem;
+            color: var(--primary-color);
+        }
+
+        .keunggulan-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+            gap: 1.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .keunggulan-box {
+            background: var(--white);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+            opacity: 0;
+            transform: translateY(20px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .keunggulan-box.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .keunggulan-box:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border-color: var(--primary-color);
+        }
+
+        .keunggulan-icon {
+            width: 52px;
+            height: 52px;
+            background: linear-gradient(135deg, var(--primary-color), #7c3aed);
+            border-radius: 14px;
+            margin: 0 auto 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.3rem;
+            transition: transform 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .keunggulan-box:hover .keunggulan-icon {
+            transform: scale(1.1);
+        }
+
+        .keunggulan-box h4 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: var(--text-dark);
+            line-height: 1.4;
+        }
+
+        .keunggulan-box p {
+            font-size: 0.95rem;
+            color: var(--text-light);
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        @media (max-width: 768px) {
+            .keunggulan-section {
+                margin-top: 2rem;
+            }
+
+            .keunggulan-grid {
+                gap: 1.25rem;
+            }
+
+            .keunggulan-box {
+                padding: 1.25rem;
+            }
+
+            .keunggulan-icon {
+                width: 48px;
+                height: 48px;
+                font-size: 1.2rem;
+            }
+
+            .keunggulan-box h4 {
+                font-size: 1.05rem;
+            }
+
+            .keunggulan-box p {
+                font-size: 0.9rem;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: var(--white);
+                flex-direction: column;
+                padding: 1rem;
+                border-bottom: 1px solid var(--border-color);
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .menu-toggle {
+                display: flex;
+            }
+
+            nav .container {
+                padding-left: 60px;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero p {
+                font-size: 1.1rem;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .keunggulan-grid {
+                grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+                gap: 1rem;
+            }
+
+            .keunggulan-box {
+                padding: 1.25rem;
+            }
+
+            .keunggulan-icon {
+                width: 40px;
+                height: 40px;
+                font-size: 1.1rem;
+            }
+
+            .keunggulan-box h4 {
+                font-size: 1rem;
+            }
+
+            .keunggulan-box p {
+                font-size: 0.85rem;
+            }
+
+            .scroll-up-btn {
+                width: 46px;
+                height: 46px;
+                bottom: 40px;
+                right: 20px;
+                font-size: 1.1rem;
+                z-index: 9999; /* Very high z-index to ensure visibility above all other elements */
+            }
+
+            .video-container iframe {
+                height: 250px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .keunggulan-grid {
+                grid-template-columns: 1fr;
+                gap: 0.75rem;
+            }
+
+            .keunggulan-box {
+                padding: 1rem;
+            }
+
+            .keunggulan-title {
+                font-size: 1.5rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .scroll-up-btn {
+                width: 44px;
+                height: 44px;
+                bottom: 30px;
+                right: 15px;
+                font-size: 1rem;
+            }
+
+            .video-container iframe {
+                height: 200px;
+            }
+
+            nav .container {
+                padding-left: 50px;
+            }
+
+            .menu-toggle {
+                left: 15px;
+            }
+        }
+
+    </style>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="container">
+            <div class="menu-toggle" id="menuToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <a href="#home" class="logo">Ma'had An Nama'</a>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#profil">Profil</a></li>
+                <li><a href="#jenjang">Jenjang</a></li>
+                <li><a href="#daftar-sop">Daftar SOP</a></li>
+                <li><a href="#penerimaan">Penerimaan Santri Baru</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="container">
+            <div class="hero-content">
+                <h1>Kokoh Akidahnya, Tepat Ibadahnya, Mulia Akhlaknya</h1>
+                <p>Mewujudkan Generasi Qur'ani yang beragama sesuai dengan tata cara Salafush Shalih</p>
+                <div class="hero-buttons">
+                    <button class="primary-btn" onclick="scrollToSection('profil')">Tentang Kami</button>
+                    <button class="secondary-btn" onclick="scrollToSection('contact')">Hubungi Kami</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Profil Section -->
+    <section class="features" id="profil">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Profil Ma'had An Nama'</h2>
+                <p class="section-subtitle">Pesantren Tahfidz (Ma'had) An Nama' Kota Malang</p>
+            </div>
+
+            <!-- Video Section -->
+            <div class="video-section" style="margin-bottom: 3rem;">
+                <h3 style="text-align: center; font-size: 1.8rem; margin-bottom: 2rem; color: var(--primary-color);">
+                    Video Profil</h3>
+                <div class="video-container"
+                    style="max-width: 800px; margin: 0 auto; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
+                    <iframe width="100%" height="450" src="https://www.youtube.com/embed/3E_bATOKZas"
+                        title="Ma'had An Nama' Video Profil" frameborder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowfullscreen style="border-radius: 12px;">
+                    </iframe>
+                </div>
+            </div>
+
+            <!-- VISI -->
+            <div class="vision-mission" style="margin-bottom: 3rem;">
+                <h3 style="text-align: center; font-size: 1.8rem; margin-bottom: 1rem; color: var(--primary-color);">
+                    VISI</h3>
+                <p
+                    style="text-align: center; font-size: 1.1rem; color: var(--text-light); max-width: 800px; margin: 0 auto;">
+                    Mewujudkan Generasi Qur'ani yang beragama sesuai dengan tata cara Salafush Shalih
+                </p>
+            </div>
+
+            <!-- MISI -->
+            <div class="vision-mission" style="margin-bottom: 3rem;">
+                <h3 style="text-align: center; font-size: 1.8rem; margin-bottom: 1.5rem; color: var(--primary-color);">
+                    MISI</h3>
+                <div class="mission-list" style="max-width: 800px; margin: 0 auto;">
+                    <p style="color: var(--text-light); margin-bottom: 0.8rem;">• Menyelenggarakan pendidikan berbasis
+                        Al Quran dan As sunnah, menurut Pemahaman Salafush Shalih</p>
+                    <p style="color: var(--text-light); margin-bottom: 0.8rem;">• Mempraktekkan akhlak Rasulullah
+                        shallallahu 'alaihi wasallam baik di ma'had maupun di rumah</p>
+                    <p style="color: var(--text-light); margin-bottom: 0.8rem;">• Mengintensifkan interaksi peserta
+                        didik dengan Al Quran</p>
+                    <p style="color: var(--text-light); margin-bottom: 0.8rem;">• Membentuk pribadi yang shalih, cerdas,
+                        tangkas, dan kreatif</p>
+                </div>
+            </div>
+
+            <!-- KEUNGGULAN -->
+            <div class="keunggulan-section">
+                <h3 class="keunggulan-title">KEUNGGULAN</h3>
+                <div class="keunggulan-grid">
+                    <div class="keunggulan-box">
+                        <div class="keunggulan-icon">📋</div>
+                        <h4>Ijazah Formal</h4>
+                        <p>Ijazah formal diknas yang diakui pemerintah</p>
+                    </div>
+                    <div class="keunggulan-box">
+                        <div class="keunggulan-icon">🎯</div>
+                        <h4>Ilmu Diniyah & Umum</h4>
+                        <p>Memiliki bekal ilmu diniyah dan umum yang seimbang</p>
+                    </div>
+                    <div class="keunggulan-box">
+                        <div class="keunggulan-icon">📖</div>
+                        <h4>Hafal Al-Qur'an</h4>
+                        <p>Hafal Al-Qur'an 10 juz program tahfidz</p>
+                    </div>
+                    <div class="keunggulan-box">
+                        <div class="keunggulan-icon">🧠</div>
+                        <h4>Hafal Hadits</h4>
+                        <p>Hafal hadits Arbain An-Nawawi dan beberapa hadits pilihan</p>
+                    </div>
+                    <div class="keunggulan-box">
+                        <div class="keunggulan-icon">✍️</div>
+                        <h4>Hafal Matan</h4>
+                        <p>Hafal matan Tuhfatul Athfal untuk ilmu tajwid</p>
+                    </div>
+                    <div class="keunggulan-box">
+                        <div class="keunggulan-icon">🗣️</div>
+                        <h4>Bahasa Arab</h4>
+                        <p>Menguasai bahasa arab dasar (baca, tulis, percakapan)</p>
+                    </div>
+                    <div class="keunggulan-box">
+                        <div class="keunggulan-icon">🔧</div>
+                        <h4>Keterampilan</h4>
+                        <p>Memiliki keterampilan, kecakapan hidup, dan ketangkasan</p>
+                    </div>
+                    <div class="keunggulan-box">
+                        <div class="keunggulan-icon">💼</div>
+                        <h4>Entrepreneurship</h4>
+                        <p>Belajar entrepreneurship secara langsung dengan praktisi</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Jenjang Section -->
+    <section class="courses" id="jenjang">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Jenjang Pendidikan</h2>
+                <p class="section-subtitle">Tingkatan pendidikan di Ma'had An Nama'</p>
+            </div>
+            <div class="courses-grid">
+                <div class="course-card">
+                    <div class="course-image">🌱</div>
+                    <div class="course-content">
+                        <h3>Tingkat Dasar</h3>
+                        <p>Pendidikan dasar dengan fokus pada tahsin dan tahfidz Al-Qur'an.</p>
+                        <div class="course-meta">
+                            <span>📅 6 tahun</span>
+                            <span>🌱 Usia 6-12 tahun</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="course-card">
+                    <div class="course-image">🌿</div>
+                    <div class="course-content">
+                        <h3>Tingkat Menengah</h3>
+                        <p>Pendidikan menengah dengan kurikulum diniyah dan umum yang seimbang.</p>
+                        <div class="course-meta">
+                            <span>📅 3 tahun</span>
+                            <span>🌿 Usia 13-15 tahun</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="course-card">
+                    <div class="course-image">🌳</div>
+                    <div class="course-content">
+                        <h3>Tingkat Aliyah</h3>
+                        <p>Pendidikan tingkat atas dengan persiangan ke jenjang perguruan tinggi.</p>
+                        <div class="course-meta">
+                            <span>📅 3 tahun</span>
+                            <span>🌳 Usia 16-18 tahun</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Berita Pesantren Section -->
+    <section class="features" id="berita">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Berita Pesantren</h2>
+                <p class="section-subtitle">Informasi terkini dari Ma'had An Nama'</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🔔</div>
+                    <h3>Hello world!</h3>
+                    <p>Selamat datang di website resmi Ma'had An Nama' Kota Malang.</p>
+                    <p style="color: var(--text-light); font-size: 0.9rem; margin-top: 1rem;">March 19, 2025</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📅</div>
+                    <h3>Penerimaan Santri Baru</h3>
+                    <p>Pendaftaran santri baru tahun ajaran 2025/2026 telah dibuka.</p>
+                    <p style="color: var(--text-light); font-size: 0.9rem; margin-top: 1rem;">Coming Soon</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⭐</div>
+                    <h3>Prestasi Santri</h3>
+                    <p>Santri Ma'had An Nama' meraih prestasi dalam berbagai kompetisi.</p>
+                    <p style="color: var(--text-light); font-size: 0.9rem; margin-top: 1rem;">Coming Soon</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="contact" id="contact">
+        <div class="container">
+            <div class="contact-content">
+                <h2 class="section-title">Hubungi Kami</h2>
+                <p class="section-subtitle">Ada yang bisa kami bantu?</p>
+                <div class="contact-info" style="text-align: center; margin-bottom: 2rem;">
+                    <p style="color: var(--text-light); margin-bottom: 0.5rem;">📱 WhatsApp: 087876929000</p>
+                    <p style="color: var(--text-light); margin-bottom: 0.5rem;">📞 Phone: (0341)3022501</p>
+                    <p style="color: var(--text-light); margin-bottom: 0.5rem;">📧 Email: info@mahadannama.com</p>
+                </div>
+                <div class="contact-buttons">
+                    <button class="primary-btn" onclick="openWhatsApp()">💬 WhatsApp Chat</button>
+                    <button class="secondary-btn" onclick="sendEmail()">📧 Kirim Email</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div style="text-align: center; margin-bottom: 2rem;">
+                    <h3 style="color: white; margin-bottom: 1rem;">Sekretariat Pesantren Tahfidz (Ma'had) An Nama' Kota
+                        Malang</h3>
+                    <p style="color: #9ca3af; margin-bottom: 0.5rem;">Perumahan Oma View</p>
+                    <p style="color: #9ca3af; margin-bottom: 0.5rem;">Jalan Bandara Narita Blok EL 17-18 Rt. 06 Rw. 11
+                    </p>
+                    <p style="color: #9ca3af;">Kedungkandang, Malang, 65138</p>
+                </div>
+
+            </div>
+            <div class="copyright">
+                © 2025 Ma'had An Nama'. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scroll Up Button -->
+    <a href="#" class="scroll-up-btn" onclick="scrollToTop(); return false;">▲</a>
+
+    <script>
+        // WhatsApp Configuration
+        const whatsappConfig = {
+            phoneNumber: '087876929000', // WhatsApp number from mahadannama.com
+            message: 'Assalamualaikum, saya tertarik dengan informasi Ma\'had An Nama\'.',
+            businessName: 'Ma\'had An Nama\''
+        };
+
+        // Format WhatsApp number (convert 08 to 62)
+        function formatWhatsAppNumber(phoneNumber) {
+            if (phoneNumber.startsWith('08')) {
+                return '62' + phoneNumber.substring(1);
+            }
+            return phoneNumber;
+        }
+
+        // Open WhatsApp Chat
+        function openWhatsApp() {
+            const formattedNumber = formatWhatsAppNumber(whatsappConfig.phoneNumber);
+            const message = encodeURIComponent(whatsappConfig.message);
+            const whatsappUrl = `https://wa.me/${formattedNumber}?text=${message}`;
+
+            // Track the event (you can add analytics here)
+            console.log('WhatsApp chat initiated');
+
+            // Open WhatsApp in new tab
+            window.open(whatsappUrl, '_blank');
+        }
+
+        // Send Email (alternative contact method)
+        function sendEmail() {
+            const email = 'info@mahadannama.com'; // Email from mahadannama.com
+            const subject = encodeURIComponent('Informasi Ma\'had An Nama\'');
+            const body = encodeURIComponent('Assalamualaikum,\n\nSaya ingin mendapatkan informasi lebih lanjut mengenai Ma\'had An Nama\'.\n\nTerima kasih');
+            const mailtoUrl = `mailto:${email}?subject=${subject}&body=${body}`;
+
+            window.location.href = mailtoUrl;
+        }
+
+        // Smooth Scroll Function
+        function scrollToSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            if (section) {
+                section.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        // Scroll to Top Function
+        function scrollToTop() {
+            const homeSection = document.getElementById('home');
+            if (homeSection) {
+                homeSection.scrollIntoView({ behavior: 'smooth' });
+            } else {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            }
+        }
+
+        // Mobile Menu Toggle
+        const menuToggle = document.getElementById('menuToggle');
+        const navLinks = document.getElementById('navLinks');
+
+        menuToggle.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+            menuToggle.classList.toggle('active');
+
+            // Toggle body scroll lock when menu is active
+            if (navLinks.classList.contains('active')) {
+                document.body.style.overflow = 'hidden';
+                document.body.style.position = 'fixed';
+                document.body.style.width = '100%';
+            } else {
+                document.body.style.overflow = '';
+                document.body.style.position = '';
+                document.body.style.width = '';
+            }
+        });
+
+        // Close mobile menu when clicking on a link
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.classList.remove('active');
+                menuToggle.classList.remove('active');
+                document.body.style.overflow = '';
+                document.body.style.position = '';
+                document.body.style.width = '';
+            });
+        });
+
+        // Also close menu when clicking outside of it
+        document.addEventListener('click', (event) => {
+            if (!navLinks.contains(event.target) && !menuToggle.contains(event.target) && navLinks.classList.contains('active')) {
+                navLinks.classList.remove('active');
+                menuToggle.classList.remove('active');
+                document.body.style.overflow = '';
+                document.body.style.position = '';
+                document.body.style.width = '';
+            }
+        });
+
+        // Scroll Animation for Elements
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        // Observe all feature cards, course cards, and keunggulan boxes
+        document.addEventListener('DOMContentLoaded', () => {
+            const animatedElements = document.querySelectorAll('.feature-card, .course-card, .keunggulan-box');
+            animatedElements.forEach(el => observer.observe(el));
+        });
+
+        // Smooth scroll for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href').substring(1);
+                const targetSection = document.getElementById(targetId);
+
+                if (targetSection) {
+                    const navHeight = document.querySelector('nav').offsetHeight;
+                    const targetPosition = targetSection.offsetTop - navHeight;
+
+                    window.scrollTo({
+                        top: targetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        // Enhanced scroll effect for navigation and up button
+        let lastScroll = 0;
+        const scrollThreshold = 100;
+        const upButtonThreshold = 300;
+
+        window.addEventListener('scroll', () => {
+            const nav = document.querySelector('nav');
+            const upButton = document.querySelector('.scroll-up-btn');
+            const currentScroll = window.pageYOffset;
+
+            // Navigation hide/show logic
+            if (currentScroll > scrollThreshold) {
+                nav.style.boxShadow = '0 2px 10px rgba(0,0,0,0.1)';
+
+                // Hide navigation when scrolling down
+                if (currentScroll > lastScroll) {
+                    nav.classList.add('nav-hidden');
+                } else {
+                    // Show navigation when scrolling up
+                    nav.classList.remove('nav-hidden');
+                }
+            } else {
+                nav.style.boxShadow = 'none';
+                nav.classList.remove('nav-hidden');
+            }
+
+            // Up button show/hide logic - ensure it's visible on mobile
+            if (upButton && currentScroll > upButtonThreshold) {
+                upButton.classList.add('visible');
+            } else if (upButton) {
+                upButton.classList.remove('visible');
+            }
+
+            lastScroll = currentScroll;
+        });
+
+        // Add hover effect to cards
+        document.querySelectorAll('.feature-card, .course-card').forEach(card => {
+            card.addEventListener('mouseenter', function () {
+                this.style.transform = 'translateY(-5px)';
+            });
+
+            card.addEventListener('mouseleave', function () {
+                this.style.transform = 'translateY(0)';
+            });
+        });
+
+
+
+        // Add pulse animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes pulse {
+                0% { transform: scale(1); }
+                50% { transform: scale(1.1); }
+                100% { transform: scale(1); }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+
+</html>
